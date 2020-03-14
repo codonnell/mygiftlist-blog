@@ -1,0 +1,14 @@
+{
+    "name": "mygiftlist",
+    "version": "1.0.0",
+    "description": "",
+    "private": true,
+    "devDependencies": {
+        "react": "^16.13.0",
+        "react-dom": "^16.13.0",
+        "shadow-cljs": "^2.8.83",
+        "minimist": "^1.2.2"
+    },
+    "author": "Chris O'Donnell",
+    "license": "MIT"
+}

@@ -1,0 +1,16 @@
+{:deps {:aliases [:dev]}
+ :source-paths ["src"]
+ :nrepl {:middleware [cider.nrepl/cider-middleware
+                      refactor-nrepl.middleware/wrap-refactor]}
+ :dev-http {8080 "resources/public/"}
+ :builds {:dev {:target     :browser
+                :output-dir "resources/public/js"
+                :asset-path "/js"
+
+                :modules    {:main {:entries [rocks.mygiftlist.client]
+                                    :init-fn rocks.mygiftlist.client/init}}
+
+                :devtools   {:watch-dir "resources/public"
+                             :after-load rocks.mygiftlist.client/refresh
+                             :preloads [com.fulcrologic.fulcro.inspect.preload
+                                        rocks.mygiftlist.development-preload]}}}}
