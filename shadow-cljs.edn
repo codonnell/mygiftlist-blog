@@ -10,6 +10,12 @@
                 :modules    {:main {:entries [rocks.mygiftlist.client]
                                     :init-fn rocks.mygiftlist.client/init}}
 
+                :closure-defines
+                {rocks.mygiftlist.config/AUTH0_CLIENT_ID "heIlMgUZmvjI3muqPO3Ua5F5VpLgTpM3"
+                 rocks.mygiftlist.config/AUTH0_DOMAIN "mygiftlist-blog.auth0.com"
+                 rocks.mygiftlist.config/AUTH0_AUDIENCE "https://blog.mygiftlist.rocks"
+                 rocks.mygiftlist.config/AUTH0_CONNECTION "Username-Password-Authentication"}
+
                 :devtools   {:watch-dir "resources/public"
                              :after-load rocks.mygiftlist.client/refresh
                              :preloads [com.fulcrologic.fulcro.inspect.preload
