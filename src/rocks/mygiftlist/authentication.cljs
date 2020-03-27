@@ -32,4 +32,5 @@
   (go-promise (<!p (.getTokenSilently @auth0-client))))
 
 (defn get-user-info []
-  (go-promise (<!p (.getUser @auth0-client))))
+  (go-promise (js->clj (<!p (.getUser @auth0-client))
+                :keywordize-keys true)))
