@@ -23,4 +23,6 @@ To run this application in development mode, start a shadow-cljs server with
 npx shadow-cljs -d nrepl:0.7.0-beta1 -d cider/piggieback:0.4.2 -d refactor-nrepl:2.5.0 -d cider/cider-nrepl:0.25.0-SNAPSHOT server
 ```
 
-Alternatively, CIDER users can run `cider-jack-in-cljs`. With this running, you can control compilation by accessing the shadow-cljs server at http://localhost:9630 and access the application at http://localhost:8080.
+With this running, you can control compilation by accessing the shadow-cljs server at http://localhost:9630. In addition, this command will start up an nrepl server, which you should connect to with your preferred REPL. Alternatively, CIDER users can run `cider-jack-in-clj&cljs`.
+
+In your clojure repl, make sure you are in the `user` namespace and evaluate `(start)`. This will start our web server. With the web server running, you can access the application at http://localhost:3000.
