@@ -3,6 +3,7 @@
             [org.httpkit.server :as http-kit]
             [rocks.mygiftlist.config :as config]
             [rocks.mygiftlist.parser :as parser]
+            [rocks.mygiftlist.transit :as transit]
             [com.fulcrologic.fulcro.server.api-middleware
              :refer [handle-api-request
                      wrap-transit-params
@@ -29,8 +30,8 @@
 (def handler
   (-> not-found-handler
     (wrap-api "/api")
-    wrap-transit-params
-    wrap-transit-response
+    (wrap-transit-params {:opts {:handlers transit/read-handlers}})
+    (wrap-transit-response {:opts {:handlers transit/write-handlers}})
     (wrap-defaults (assoc-in site-defaults
                      [:security :anti-forgery] false))
     gzip/wrap-gzip))

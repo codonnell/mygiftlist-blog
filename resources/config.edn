@@ -1,1 +1,7 @@
-{:port #long #or [#env PORT 3000]}
+{:database-spec {:username      #or [#env POSTGRES_USER "postgres"]
+                 :password      #or [#env POSTGRES_PASSWORD "password"]
+                 :server-name   #or [#env POSTGRES_HOSTNAME "localhost"]
+                 :port-number   #long #or [#env POSTGRES_PORT 15432]
+                 :database-name #or [#env POSTGRES_DB "postgres"]
+                 :sslmode       #or [#env POSTGRES_SSLMODE "disable"]}
+ :port          #long #or [#env PORT 3000]}

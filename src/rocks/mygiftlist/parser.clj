@@ -5,6 +5,7 @@
    [com.wsscode.pathom.connect :as pc :refer [defresolver]]
    [com.wsscode.pathom.core :as p]
    [clojure.core.async :refer [<!!]]
+   [rocks.mygiftlist.db :as db]
    [rocks.mygiftlist.type.user :as user]
    [rocks.mygiftlist.model.user :as m.user]))
 
@@ -57,7 +58,8 @@
                             ;; things to the resolver/mutation
                             ;; environment, like the server config,
                             ;; database connections, etc.
-                            env))
+                            (assoc env
+                              ::db/pool db/pool)))
                         (preprocess-parser-plugin log-requests)
                         p/error-handler-plugin
                         p/request-cache-plugin
@@ -74,6 +76,8 @@
                               tx))))))
 
 (comment
-  (parser {} `[(m.user/insert-user #::user{:id 1 :email "me@example.com"})])
-  (parser {} [{[::user/id 2] [::user/id ::user/email]}])
+  (parser {} `[{(m.user/insert-user #::user{:auth0-id "auth0|abc123" :email "me@example.com"})
+                [::user/id]}])
+  (parser {} [{[::user/id #uuid "8d5c93d3-7d22-4925-bc66-118e5e3d7238"]
+               [::user/id ::user/auth0-id ::user/email]}])
   )

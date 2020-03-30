@@ -2,7 +2,10 @@
   (:require
    [rocks.mygiftlist.application :refer [SPA]]
    [rocks.mygiftlist.authentication :as auth]
+   [rocks.mygiftlist.model.user :as m.user]
+   [rocks.mygiftlist.type.user :as user]
    [com.fulcrologic.fulcro.algorithms.normalized-state :refer [swap!->]]
+   [com.fulcrologic.fulcro.algorithms.tempid :as tempid]
    [com.fulcrologic.fulcro.application :as app]
    [com.fulcrologic.fulcro.components :as comp :refer [defsc]]
    [com.fulcrologic.fulcro.dom :as dom]
@@ -194,7 +197,9 @@
         (do (comp/transact! SPA
               [(route-to {:path (url->path js/window.location.pathname)})])
             (let [{:keys [sub email]} (<! (auth/get-user-info))]
-              (comp/transact! SPA [(set-current-user
-                                     #:user{:id sub :email email})])))
+              (comp/transact! SPA [(m.user/set-current-user
+                                     #::user{:id (tempid/tempid)
+                                             :auth0-id sub
+                                             :email email})])))
         (comp/transact! SPA
           [(route-to {:path (dr/path-to LoginForm)})])))))

@@ -4,4 +4,6 @@
 
 (def ^:private config (aero/read-config (io/resource "config.edn")))
 
+(def database-spec (:database-spec config))
+
 (def port (:port config))

@@ -1,21 +1,29 @@
 {:paths   ["src" "resources"]
- :deps    {com.fulcrologic/fulcro {:mvn/version "3.1.22"}
-           com.taoensso/timbre    {:mvn/version "4.10.0"}
-           ring/ring-core         {:mvn/version "1.8.0"}
-           ring/ring-defaults     {:mvn/version "0.3.2"}
-           bk/ring-gzip           {:mvn/version "0.3.0"}
-           mount                  {:mvn/version "0.1.16"}
-           aero                   {:mvn/version "1.1.5"}
-           http-kit               {:mvn/version "2.4.0-alpha6"}}
+ :deps    {com.fulcrologic/fulcro    {:mvn/version "3.1.22"}
+           com.wsscode/pathom        {:mvn/version "2.2.31"}
+           edn-query-language/eql    {:mvn/version "0.0.9"}
+           com.taoensso/timbre       {:mvn/version "4.10.0"}
+           com.cognitect/transit-clj {:mvn/version "1.0.324"}
+           ring/ring-core            {:mvn/version "1.8.0"}
+           ring/ring-defaults        {:mvn/version "0.3.2"}
+           bk/ring-gzip              {:mvn/version "0.3.0"}
+           mount                     {:mvn/version "0.1.16"}
+           seancorfield/next.jdbc    {:mvn/version "1.0.409"}
+           honeysql                  {:mvn/version "0.9.10"}
+           nilenso/honeysql-postgres {:mvn/version "0.2.6"}
+           org.postgresql/postgresql {:mvn/version "42.2.11"}
+           hikari-cp                 {:mvn/version "2.11.0"}
+           aero                      {:mvn/version "1.1.6"}
+           http-kit                  {:mvn/version "2.4.0-alpha6"}}
  :aliases {:dev      {:extra-paths ["dev"]
                       :jvm-opts    ["-Dtrace"]
                       :extra-deps  {org.clojure/tools.namespace         {:mvn/version "0.3.1"}
                                     org.clojure/clojurescript           {:mvn/version "1.10.597"}
                                     com.fulcrologic/semantic-ui-wrapper {:mvn/version "1.0.0"}
                                     org.clojure/core.async              {:mvn/version "1.0.567"}
+                                    com.cognitect/transit-cljs          {:mvn/version "0.8.256"}
                                     com.wsscode/async                   {:mvn/version "1.0.2"}
                                     clj-commons/pushy                   {:mvn/version "0.3.10"}
-                                    edn-query-language/eql              {:mvn/version "0.0.9"}
                                     thheller/shadow-cljs                {:mvn/version "2.8.83"}
                                     binaryage/devtools                  {:mvn/version "0.9.10"}}}
            :outdated {:extra-deps {olical/depot {:mvn/version "1.8.4"}}
