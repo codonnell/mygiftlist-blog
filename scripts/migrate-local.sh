@@ -7,7 +7,7 @@ docker build \
        -t cpodonnell/mygiftlist-blog:migrate-local .
 
 docker run --rm \
-       --network mygiftlist-blog_default \
+       --network "${1:-mygiftlist-blog_default}" \
        -e POSTGRES_USER=postgres \
        -e POSTGRES_PASSWORD=password \
        -e POSTGRES_HOSTNAME=postgres \

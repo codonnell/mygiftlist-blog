@@ -1,27 +1,23 @@
 (ns user
   (:require
    rocks.mygiftlist.server
-   [clojure.tools.namespace.repl :as tools-ns :refer [set-refresh-dirs]]
-   [mount.core :as mount]))
+   rocks.mygiftlist.parser
+   rocks.mygiftlist.db
+   rocks.mygiftlist.config
+   [integrant.core :as ig]
+   [integrant.repl :refer [clear go halt prep init reset reset-all]]
+   [integrant.repl.state :refer [system]]
+   [clojure.java.io :as io]))
 
-;; ==================== REPL TOOLING ====================
+(integrant.repl/set-prep!
+  (fn []
+    (merge
+      (ig/read-string (slurp (io/resource "system.edn")))
+      (ig/read-string (slurp (io/resource "resources/dev.edn"))))))
 
-(set-refresh-dirs "src" "dev")
-
-(defn start
-  "Start the web server"
-  [] (mount/start))
-
-(defn stop
-  "Stop the web server"
-  [] (mount/stop))
-
-(defn restart
-  "Stop, reload code, and restart the server. If there is a compile error, use:
-  ```
-  (tools-ns/refresh)
-  ```
-  to recompile, and then use `start` once things are good."
-  []
-  (stop)
-  (tools-ns/refresh :after 'user/start))
+(comment
+  system
+  (go)
+  (reset)
+  (halt)
+  )

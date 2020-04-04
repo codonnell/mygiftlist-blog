@@ -1,7 +1,7 @@
 (ns rocks.mygiftlist.parser
   (:require
    [taoensso.timbre :as log]
-   [mount.core :refer [defstate]]
+   [integrant.core :as ig]
    [com.wsscode.pathom.connect :as pc :refer [defresolver]]
    [com.wsscode.pathom.core :as p]
    [clojure.core.async :refer [<!!]]
@@ -41,8 +41,8 @@
   (log/debug "Pathom transaction:" (pr-str tx))
   req)
 
-(defstate parser
-  :start
+(defmethod ig/init-key ::parser
+  [_ {::db/keys [pool]}]
   (let [real-parser
         (p/parallel-parser
           {::p/mutate  pc/mutate-async
@@ -59,7 +59,7 @@
                             ;; environment, like the server config,
                             ;; database connections, etc.
                             (assoc env
-                              ::db/pool db/pool)))
+                              ::db/pool pool)))
                         (preprocess-parser-plugin log-requests)
                         p/error-handler-plugin
                         p/request-cache-plugin

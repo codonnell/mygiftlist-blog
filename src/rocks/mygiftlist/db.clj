@@ -1,6 +1,6 @@
 (ns rocks.mygiftlist.db
   (:require [rocks.mygiftlist.config :as config]
-            [mount.core :refer [defstate]]
+            [integrant.core :as ig]
             [hikari-cp.core :as pool]
             [next.jdbc :as jdbc]
             [next.jdbc.result-set :as result-set]
@@ -9,7 +9,7 @@
             [honeysql.core :as sql]
             honeysql-postgres.format))
 
-(def datasource-options
+(defn datasource-options [database-spec]
   (merge {:auto-commit        true
           :read-only          false
           :connection-timeout 30000
@@ -21,11 +21,15 @@
           :pool-name          "db-pool"
           :adapter            "postgresql"
           :register-mbeans    false}
-    config/database-spec))
+    database-spec))
 
-(defstate pool
-  :start (pool/make-datasource datasource-options)
-  :stop (pool/close-datasource pool))
+(defmethod ig/init-key ::pool
+  [_ {::config/keys [config]}]
+  (pool/make-datasource (datasource-options (config/database-spec config))))
+
+(defmethod ig/halt-key! ::pool
+  [_ pool]
+  (pool/close-datasource pool))
 
 (defn- qualify
   "Given a kebab-case database table name, returns the namespace that

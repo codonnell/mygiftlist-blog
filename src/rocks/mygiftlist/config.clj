@@ -1,9 +1,15 @@
 (ns rocks.mygiftlist.config
-  (:require [clojure.java.io :as io]
+  (:require [integrant.core :as ig]
+            [clojure.java.io :as io]
             [aero.core :as aero]))
 
-(def ^:private config (aero/read-config (io/resource "config.edn")))
+(defmethod ig/init-key ::config
+  [_ {::keys [profile]}]
+  (aero/read-config (io/resource "config.edn")
+    {:profile profile}))
 
-(def database-spec (:database-spec config))
+(defn database-spec [config]
+  (:database-spec config))
 
-(def port (:port config))
+(defn port [config]
+  (:port config))

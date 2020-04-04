@@ -1,5 +1,5 @@
 (ns rocks.mygiftlist.server
-  (:require [mount.core :refer [defstate]]
+  (:require [integrant.core :as ig]
             [org.httpkit.server :as http-kit]
             [rocks.mygiftlist.config :as config]
             [rocks.mygiftlist.parser :as parser]
@@ -18,25 +18,28 @@
   (assoc-in (resp/resource-response "public/index.html")
     [:headers "Content-Type"] "text/html"))
 
-(defn- wrap-api [handler uri]
+(defn- wrap-api [handler parser uri]
   (fn [request]
     (if (= uri (:uri request))
       {:status 200
-       :body (parser/parser {:ring/request request}
+       :body (parser {:ring/request request}
                (:transit-params request))
        :headers {"Content-Type" "application/transit+json"}}
       (handler request))))
 
-(def handler
+(defn handler [parser]
   (-> not-found-handler
-    (wrap-api "/api")
+    (wrap-api parser "/api")
     (wrap-transit-params {:opts {:handlers transit/read-handlers}})
     (wrap-transit-response {:opts {:handlers transit/write-handlers}})
     (wrap-defaults (assoc-in site-defaults
                      [:security :anti-forgery] false))
     gzip/wrap-gzip))
 
-(defstate http-server
-  :start
-  (http-kit/run-server handler {:port config/port})
-  :stop (http-server))
+(defmethod ig/init-key ::server
+  [_ {::parser/keys [parser] ::config/keys [config]}]
+  (http-kit/run-server (handler parser) {:port (:port config)}))
+
+(defmethod ig/halt-key! ::server
+  [_ server]
+  (server))
