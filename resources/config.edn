@@ -8,4 +8,7 @@
                  :sslmode       #or [#env POSTGRES_SSLMODE "disable"]}
  :port          #long #profile {:dev  3000
                                 :test 3001
-                                :prod #env PORT}}
+                                :prod #env PORT}
+ :auth {:jwk-endpoint  #or [#env JWK_ENDPOINT "https://mygiftlist-blog.auth0.com/.well-known/jwks.json"]
+        :issuer #or [#env JWT_ISSUER "https://mygiftlist-blog.auth0.com/"]
+        :audience #or [#env JWT_AUDIENCE "https://blog.mygiftlist.rocks"]}}

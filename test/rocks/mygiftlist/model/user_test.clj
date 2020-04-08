@@ -25,7 +25,8 @@
   (let [tempid (tempid/tempid)
         {::parser/keys [parser] ::db/keys [pool]} system
         u (example-user {::user/id tempid})
-        ret (parser {} `[(m.user/insert-user ~u)])]
+        ret (parser (test-helper/authenticate-with {} u)
+              `[(m.user/insert-user ~u)])]
     (is (= {:count 1}
           (db/execute-one! pool {:select [(sql/call :count :*)]
                                  :from [:user]}))
@@ -41,12 +42,27 @@
             (get ret `m.user/insert-user))
         "The parser return value has the user id and tempids mapping"))))
 
+(deftest test-unauthorized-insert-user
+  (let [{::parser/keys [parser] ::db/keys [pool]} system]
+    (parser {} `[(m.user/insert-user ~(example-user))])
+    (is (= {:count 0}
+          (db/execute-one! pool {:select [(sql/call :count :*)]
+                                 :from [:user]}))
+      "No user is inserted when no credentials are provided.")
+    (parser (test-helper/authenticate-with {}
+              (example-user {::user/auth0-id "auth0|def456"}))
+      `[(m.user/insert-user ~(example-user))])
+    (is (= {:count 0}
+          (db/execute-one! pool {:select [(sql/call :count :*)]
+                                 :from [:user]}))
+      "No user is inserted when unauthorized credentials are provided.")))
+
 (deftest test-user-by-id
   (let [{::user/keys [id] :as u} (example-user)
         {::parser/keys [parser] ::db/keys [pool]} system
         _ (db/execute-one! pool {:insert-into :user
                                  :values [u]})
-        ret (parser {}
+        ret (parser (test-helper/authenticate-with {} u)
               [{[::user/id id]
                 [::user/id ::user/email
                  ::user/auth0-id ::user/created-at]}])]
@@ -57,6 +73,26 @@
     (is (instance? java.time.Instant
           (get-in ret [[::user/id id] ::user/created-at]))
       "The query result's created-at value is an instant")))
+
+(deftest test-unauthorized-user-by-id
+  (let [{::user/keys [id] :as u} (example-user)
+        {::parser/keys [parser] ::db/keys [pool]} system
+        _ (db/execute-one! pool {:insert-into :user
+                                 :values [u]})
+        query [{[::user/id id]
+                [::user/id ::user/email
+                 ::user/auth0-id ::user/created-at]}]
+        empty-creds-ret (parser {} query)
+        incorrect-creds-ret
+        (parser (test-helper/authenticate-with {}
+                  (example-user {::user/auth0-id "auth0|def456"}))
+          query)]
+    (is (every? #(not (contains? (get empty-creds-ret [::user/id id]) %))
+          [::user/email ::user/auth0-id ::user/created-at])
+      "Unauthenticated requests cannot access user data")
+    (is (every? #(not (contains? (get incorrect-creds-ret [::user/id id]) %))
+          [::user/email ::user/auth0-id ::user/created-at])
+      "Unauthorized requests cannot access user data")))
 
 (comment
   (db/execute-one! db/pool {:insert-into :user

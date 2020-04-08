@@ -13,3 +13,12 @@
 
 (defn port [config]
   (:port config))
+
+(defn jwk-endpoint [config]
+  (get-in config [:auth :jwk-endpoint]))
+
+(defn jwt-issuer [config]
+  (get-in config [:auth :issuer]))
+
+(defn jwt-audience [config]
+  (get-in config [:auth :audience]))

@@ -1,6 +1,9 @@
 {:rocks.mygiftlist.config/config
  {:rocks.mygiftlist.config/profile :prod}
 
+ :rocks.mygiftlist.authentication/wrap-jwt
+ {:rocks.mygiftlist.config/config #ig/ref :rocks.mygiftlist.config/config}
+
  :rocks.mygiftlist.db/pool
  {:rocks.mygiftlist.config/config #ig/ref :rocks.mygiftlist.config/config}
 
@@ -9,4 +12,5 @@
 
  :rocks.mygiftlist.server/server
  {:rocks.mygiftlist.parser/parser #ig/ref :rocks.mygiftlist.parser/parser
+  :rocks.mygiftlist.authentication/wrap-jwt #ig/ref :rocks.mygiftlist.authentication/wrap-jwt
   :rocks.mygiftlist.config/config #ig/ref :rocks.mygiftlist.config/config}}

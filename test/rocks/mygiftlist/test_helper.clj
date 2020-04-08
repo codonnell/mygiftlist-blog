@@ -1,11 +1,13 @@
 (ns rocks.mygiftlist.test-helper
-  (:require [rocks.mygiftlist.config :as config]
+  (:require [rocks.mygiftlist.authentication :as auth]
+            [rocks.mygiftlist.config :as config]
             [rocks.mygiftlist.db :as db]
             [next.jdbc :as jdbc]
             [integrant.core :as ig]
             [clojure.edn :as edn]
             [clojure.java.io :as io]
-            [clojure.string :as str]))
+            [clojure.string :as str]
+            [rocks.mygiftlist.type.user :as user]))
 
 (def system nil)
 
@@ -47,3 +49,8 @@
   [test-fn]
   (test-fn)
   (jdbc/execute-one! (::db/pool system) truncate-all-tables))
+
+(defn authenticate-with
+  "Adds authentication claims to `env` for the given user."
+  [env {::user/keys [auth0-id]}]
+  (assoc-in env [:ring/request ::auth/claims :sub] auth0-id))

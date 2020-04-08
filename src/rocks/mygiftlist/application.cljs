@@ -1,7 +1,8 @@
 (ns rocks.mygiftlist.application
   (:require [com.fulcrologic.fulcro.application :as app]
             [com.fulcrologic.fulcro.rendering.keyframe-render2 :as keyframe-render2]
-            [com.fulcrologic.fulcro.networking.http-remote :as http-remote]
+            [com.fulcrologic.fulcro.networking.http-remote :as f.http-remote]
+            [rocks.mygiftlist.http-remote :as http-remote]
             [rocks.mygiftlist.transit :as transit]))
 
 (defonce SPA
@@ -12,5 +13,5 @@
                           (http-remote/wrap-fulcro-request
                             identity transit/write-handlers)
                           :response-middleware
-                          (http-remote/wrap-fulcro-response
+                          (f.http-remote/wrap-fulcro-response
                             identity transit/read-handlers)})}}))

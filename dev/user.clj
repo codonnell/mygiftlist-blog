@@ -4,6 +4,7 @@
    rocks.mygiftlist.parser
    rocks.mygiftlist.db
    rocks.mygiftlist.config
+   rocks.mygiftlist.authentication
    [integrant.core :as ig]
    [integrant.repl :refer [clear go halt prep init reset reset-all]]
    [integrant.repl.state :refer [system]]

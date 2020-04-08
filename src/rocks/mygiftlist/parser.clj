@@ -5,6 +5,7 @@
    [com.wsscode.pathom.connect :as pc :refer [defresolver]]
    [com.wsscode.pathom.core :as p]
    [clojure.core.async :refer [<!!]]
+   [rocks.mygiftlist.authentication :as auth]
    [rocks.mygiftlist.db :as db]
    [rocks.mygiftlist.type.user :as user]
    [rocks.mygiftlist.model.user :as m.user]))
@@ -39,6 +40,7 @@
 
 (defn log-requests [{:keys [env tx] :as req}]
   (log/debug "Pathom transaction:" (pr-str tx))
+  (log/debug "Claims:" (-> env :ring/request ::auth/claims))
   req)
 
 (defmethod ig/init-key ::parser
@@ -59,7 +61,9 @@
                             ;; environment, like the server config,
                             ;; database connections, etc.
                             (assoc env
-                              ::db/pool pool)))
+                              ::db/pool pool
+                              :requester-auth0-id
+                              (get-in env [:ring/request ::auth/claims :sub]))))
                         (preprocess-parser-plugin log-requests)
                         p/error-handler-plugin
                         p/request-cache-plugin

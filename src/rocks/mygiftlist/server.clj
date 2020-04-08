@@ -1,6 +1,7 @@
 (ns rocks.mygiftlist.server
   (:require [integrant.core :as ig]
             [org.httpkit.server :as http-kit]
+            [rocks.mygiftlist.authentication :as auth]
             [rocks.mygiftlist.config :as config]
             [rocks.mygiftlist.parser :as parser]
             [rocks.mygiftlist.transit :as transit]
@@ -27,9 +28,10 @@
        :headers {"Content-Type" "application/transit+json"}}
       (handler request))))
 
-(defn handler [parser]
+(defn handler [{:keys [parser config wrap-jwt]}]
   (-> not-found-handler
     (wrap-api parser "/api")
+    wrap-jwt
     (wrap-transit-params {:opts {:handlers transit/read-handlers}})
     (wrap-transit-response {:opts {:handlers transit/write-handlers}})
     (wrap-defaults (assoc-in site-defaults
@@ -37,8 +39,13 @@
     gzip/wrap-gzip))
 
 (defmethod ig/init-key ::server
-  [_ {::parser/keys [parser] ::config/keys [config]}]
-  (http-kit/run-server (handler parser) {:port (:port config)}))
+  [_ {::parser/keys [parser]
+      ::config/keys [config]
+      ::auth/keys [wrap-jwt]}]
+  (http-kit/run-server (handler {:parser parser
+                                 :config config
+                                 :wrap-jwt wrap-jwt})
+    {:port (:port config)}))
 
 (defmethod ig/halt-key! ::server
   [_ server]
