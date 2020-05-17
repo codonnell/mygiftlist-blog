@@ -1,0 +1,7 @@
+{:lint-as {com.fulcrologic.fulcro.mutations/defmutation clojure.core/defrecord
+           com.wsscode.pathom.connect/defresolver clojure.core/defn
+           com.wsscode.pathom.connect/defmutation clojure.core/defn
+           com.fulcrologic.fulcro.components/defsc clojure.core/defn
+           com.fulcrologic.fulcro.routing.dynamic-routing/defrouter clojure.core/defn
+           com.fulcrologic.fulcro.algorithms.normalized-state/swap!-> clojure.core/->
+           com.wsscode.async.async-cljs/let-chan clojure.core/let}}

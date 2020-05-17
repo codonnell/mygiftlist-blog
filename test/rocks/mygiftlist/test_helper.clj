@@ -1,10 +1,8 @@
 (ns rocks.mygiftlist.test-helper
   (:require [rocks.mygiftlist.authentication :as auth]
-            [rocks.mygiftlist.config :as config]
             [rocks.mygiftlist.db :as db]
             [next.jdbc :as jdbc]
             [integrant.core :as ig]
-            [clojure.edn :as edn]
             [clojure.java.io :as io]
             [clojure.string :as str]
             [rocks.mygiftlist.type.user :as user]))
@@ -40,7 +38,9 @@
 
 (def ^:private truncate-all-tables
   "SQL vector that truncates all tables"
-  [(str "TRUNCATE " (str/join " " (mapv (comp double-quote name) tables)))])
+  [(str "TRUNCATE "
+     (str/join " " (mapv (comp double-quote name) tables))
+     " CASCADE")])
 
 (defn truncate-after
   "Test fixtures that truncates all database tables after running the

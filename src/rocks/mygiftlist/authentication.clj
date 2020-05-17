@@ -2,7 +2,6 @@
   (:require [rocks.mygiftlist.config :as config]
             [integrant.core :as ig])
   (:import [java.net URL]
-           [java.time Instant]
            [com.auth0.jwk GuavaCachedJwkProvider UrlJwkProvider]
            [com.auth0.jwt.interfaces RSAKeyProvider]
            [com.auth0.jwt JWT]
@@ -42,7 +41,7 @@
          :exp (.toInstant (.getExpiresAt decoded-jwt))
          :azp (.asString (.getClaim decoded-jwt "azp"))
          :scope (.asString (.getClaim decoded-jwt "scope"))})
-      (catch JWTVerificationException e
+      (catch JWTVerificationException _
         nil))))
 
 (defn- get-token [req]

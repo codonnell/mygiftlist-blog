@@ -8,6 +8,7 @@
    [rocks.mygiftlist.authentication :as auth]
    [rocks.mygiftlist.db :as db]
    [rocks.mygiftlist.type.user :as user]
+   [rocks.mygiftlist.model.gift-list :as m.gift-list]
    [rocks.mygiftlist.model.user :as m.user]))
 
 (defresolver index-explorer [env _]
@@ -21,7 +22,8 @@
        #(into {} (map (fn [[k v]] [k (dissoc v ::pc/mutate)])) %)))})
 
 (def all-resolvers [index-explorer
-                    m.user/user-resolvers])
+                    m.user/user-resolvers
+                    m.gift-list/gift-list-resolvers])
 
 (defn preprocess-parser-plugin
   "Helper to create a plugin that can view/modify the env/tx of a
@@ -33,7 +35,7 @@
   {::p/wrap-parser
    (fn transform-parser-out-plugin-external [parser]
      (fn transform-parser-out-plugin-internal [env tx]
-       (let [{:keys [env tx] :as req} (f {:env env :tx tx})]
+       (let [{:keys [env tx]} (f {:env env :tx tx})]
          (if (and (map? env) (seq tx))
            (parser env tx)
            {}))))})
@@ -60,10 +62,16 @@
                             ;; things to the resolver/mutation
                             ;; environment, like the server config,
                             ;; database connections, etc.
-                            (assoc env
-                              ::db/pool pool
-                              :requester-auth0-id
-                              (get-in env [:ring/request ::auth/claims :sub]))))
+                            (let [requester-auth0-id (get-in env [:ring/request ::auth/claims :sub])]
+                              (assoc env
+                                ::db/pool pool
+                                :requester-auth0-id requester-auth0-id
+                                :requester-id
+                                (and requester-auth0-id
+                                  (::user/id (db/execute-one! pool
+                                               {:select [:id]
+                                                :from [:user]
+                                                :where [:= requester-auth0-id :auth0_id]})))))))
                         (preprocess-parser-plugin log-requests)
                         p/error-handler-plugin
                         p/request-cache-plugin
@@ -80,8 +88,9 @@
                               tx))))))
 
 (comment
-  (parser {} `[{(m.user/insert-user #::user{:auth0-id "auth0|abc123" :email "me@example.com"})
-                [::user/id]}])
-  (parser {} [{[::user/id #uuid "8d5c93d3-7d22-4925-bc66-118e5e3d7238"]
-               [::user/id ::user/auth0-id ::user/email]}])
+  (require '[integrant.repl.state :refer [system]])
+  (def parser (::parser system))
+  (parser {:ring/request {::auth/claims {:sub "auth0|5e6da6bd10885b0ca6a93f4c"}}}
+    [{[::user/id #uuid "dc623810-d2ba-49d4-b096-4e43dcefcbcf"]
+      [::user/id ::user/auth0-id ::user/email]}])
   )

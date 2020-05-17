@@ -1,5 +1,5 @@
 (ns rocks.mygiftlist.transit
-  (:require [cognitect.transit :as t])
+  #?(:clj (:require [cognitect.transit :as t]))
   #?(:clj (:import [java.time Instant])))
 
 (def write-handlers

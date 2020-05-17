@@ -12,7 +12,7 @@
       (assoc-in [:component/id :current-user] [::user/id id])
       (assoc-in [::user/id id] user)))
   (remote [_]
-    (eql/query->ast1 `[(insert-user
+    (eql/query->ast1 `[(create-user
                          #::user{:id ~id
                                  :auth0-id ~auth0-id
                                  :email ~email})])))

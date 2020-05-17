@@ -1,4 +1,4 @@
-FROM flyway/flyway:6.3.2-alpine
+FROM flyway/flyway:6.4.2
 
 COPY migrations /flyway/sql
 

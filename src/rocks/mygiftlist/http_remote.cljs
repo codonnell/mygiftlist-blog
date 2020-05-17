@@ -12,7 +12,7 @@
    [goog.events :as events]
    [taoensso.timbre :as log]
    [rocks.mygiftlist.authentication :as auth])
-  (:import [goog.net XhrIo EventType ErrorCode]))
+  (:import [goog.net EventType]))
 
 (defn wrap-fulcro-request
   ([handler addl-transit-handlers transit-transformation]
@@ -22,7 +22,7 @@
 
                             transit-transformation
                             (assoc :transform transit-transformation)))]
-     (fn [{:keys [headers body] :as request}]
+     (fn [{:keys [headers] :as request}]
        (go
          (let [access-token (<! (auth/get-access-token))
                [body response-type] (f.http/desired-response-type request)

@@ -21,12 +21,12 @@
                   :auth0-id "auth0|abc123"}
      m)))
 
-(deftest test-insert-user
+(deftest test-create-user
   (let [tempid (tempid/tempid)
         {::parser/keys [parser] ::db/keys [pool]} system
         u (example-user {::user/id tempid})
         ret (parser (test-helper/authenticate-with {} u)
-              `[(m.user/insert-user ~u)])]
+              `[(m.user/create-user ~u)])]
     (is (= {:count 1}
           (db/execute-one! pool {:select [(sql/call :count :*)]
                                  :from [:user]}))
@@ -39,19 +39,19 @@
                                {:select [:id]
                                 :from [:user]}))]
       (is (= {::user/id user-id :tempids {tempid user-id}}
-            (get ret `m.user/insert-user))
+            (get ret `m.user/create-user))
         "The parser return value has the user id and tempids mapping"))))
 
-(deftest test-unauthorized-insert-user
+(deftest test-unauthorized-create-user
   (let [{::parser/keys [parser] ::db/keys [pool]} system]
-    (parser {} `[(m.user/insert-user ~(example-user))])
+    (parser {} `[(m.user/create-user ~(example-user))])
     (is (= {:count 0}
           (db/execute-one! pool {:select [(sql/call :count :*)]
                                  :from [:user]}))
       "No user is inserted when no credentials are provided.")
     (parser (test-helper/authenticate-with {}
               (example-user {::user/auth0-id "auth0|def456"}))
-      `[(m.user/insert-user ~(example-user))])
+      `[(m.user/create-user ~(example-user))])
     (is (= {:count 0}
           (db/execute-one! pool {:select [(sql/call :count :*)]
                                  :from [:user]}))

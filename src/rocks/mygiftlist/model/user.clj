@@ -5,22 +5,21 @@
    [rocks.mygiftlist.type.user :as user]))
 
 (defresolver user-by-id
-  [{::db/keys [pool] :keys [requester-auth0-id]} {::user/keys [id]}]
+  [{::db/keys [pool] :keys [requester-id]} {::user/keys [id]}]
   {::pc/input #{::user/id}
    ::pc/output [::user/id ::user/email ::user/auth0-id ::user/created-at]}
-  (db/execute-one! pool
-    {:select [:id :email :auth0_id :created_at]
-     :from [:user]
-     :where [:and
-             [:= id :id]
-             [:= requester-auth0-id :auth0_id]]}))
+  (when (= id requester-id)
+    (db/execute-one! pool
+      {:select [:id :email :auth0_id :created_at]
+       :from [:user]
+       :where [:= id :id]})))
 
 (defn- assign-tempid [{::user/keys [id] :as user} tempid]
   (assoc user :tempids {tempid id}))
 
-(defmutation insert-user
+(defmutation create-user
   [{::db/keys [pool] :keys [requester-auth0-id]}
-   {::user/keys [id auth0-id email] :as user}]
+   {::user/keys [id auth0-id email]}]
   {::pc/params #{::user/email ::user/auth0-id}
    ::pc/output [::user/id]}
   (when (= auth0-id requester-auth0-id)
@@ -35,4 +34,4 @@
 
 (def user-resolvers
   [user-by-id
-   insert-user])
+   create-user])

@@ -6,14 +6,12 @@
             [rocks.mygiftlist.parser :as parser]
             [rocks.mygiftlist.transit :as transit]
             [com.fulcrologic.fulcro.server.api-middleware
-             :refer [handle-api-request
-                     wrap-transit-params
+             :refer [wrap-transit-params
                      wrap-transit-response]]
             [ring.util.response :as resp]
             [ring.middleware.defaults :refer [wrap-defaults
                                               site-defaults]]
-            [ring.middleware.gzip :as gzip]
-            [taoensso.timbre :as log]))
+            [ring.middleware.gzip :as gzip]))
 
 (defn- not-found-handler [_]
   (assoc-in (resp/resource-response "public/index.html")
@@ -28,7 +26,7 @@
        :headers {"Content-Type" "application/transit+json"}}
       (handler request))))
 
-(defn handler [{:keys [parser config wrap-jwt]}]
+(defn handler [{:keys [parser wrap-jwt]}]
   (-> not-found-handler
     (wrap-api parser "/api")
     wrap-jwt

@@ -3,7 +3,7 @@
 test:
 	POSTGRES_PORT=15433 docker-compose -p mygiftlist-blog-test up -d
 	scripts/migrate-local.sh mygiftlist-blog-test_default
-	clojure -A:test:run-tests
+	clojure -A:dev:test:run-tests
 	docker-compose -p mygiftlist-blog-test down
 
 test-up:

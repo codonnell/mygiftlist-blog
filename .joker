@@ -1,0 +1,8 @@
+{:rules {:if-without-else true
+         :unused-fn-parameters true}
+ :known-macros [com.fulcrologic.fulcro.mutations/defmutation
+                com.fulcrologic.fulcro.algorithms.normalized-state/swap!->
+                com.wsscode.pathom.connect/defresolver
+                com.wsscode.pathom.connect/defmutation
+                com.fulcrologic.fulcro.components/defsc
+                com.fulcrologic.fulcro.routing.dynamic-routing/defrouter]}
