@@ -11,7 +11,8 @@
    [com.fulcrologic.semantic-ui.collections.form.ui-form-input :refer [ui-form-input]]
 
    [rocks.mygiftlist.type.gift-list :as gift-list]
-   [rocks.mygiftlist.model.gift-list :as m.gift-list]))
+   [rocks.mygiftlist.model.gift-list :as m.gift-list]
+   [com.fulcrologic.fulcro.routing.dynamic-routing :as dr]))
 
 (declare GiftListForm)
 
@@ -71,19 +72,13 @@
 
 (def ui-gift-list-form-panel (comp/factory GiftListFormPanel))
 
-(defsc CreatedGiftList [_this {::gift-list/keys [name]}]
-  {:ident ::gift-list/id
-   :query [::gift-list/id ::gift-list/name]}
-  (dom/li {} name))
+(defsc GiftList [_this {::gift-list/keys [name]}]
+  {:query [::gift-list/id ::gift-list/name]
+   :ident ::gift-list/id
+   :route-segment ["gift-list" ::gift-list/id]
+   :will-enter (fn [_ {::gift-list/keys [id]}]
+                 (dr/route-immediate [::gift-list/id (uuid id)]))}
+  (dom/div
+    (dom/h3 name)))
 
-(def ui-created-gift-list
-  (comp/factory CreatedGiftList {:keyfn ::gift-list/id}))
-
-(defsc CreatedGiftLists [_this {:keys [created-gift-lists]}]
-  {:ident (fn [] [:component/id :created-gift-lists])
-   :query [{:created-gift-lists (comp/get-query CreatedGiftList)}]
-   :initial-state {:created-gift-lists []}}
-  (dom/ul {}
-    (mapv ui-created-gift-list created-gift-lists)))
-
-(def ui-created-gift-lists (comp/factory CreatedGiftLists))
+(def ui-gift-list (comp/factory GiftList))

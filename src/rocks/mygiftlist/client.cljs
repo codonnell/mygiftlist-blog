@@ -5,11 +5,13 @@
    [rocks.mygiftlist.routing :as routing]
    [rocks.mygiftlist.model.user :as m.user]
    [rocks.mygiftlist.type.user :as user]
+   [rocks.mygiftlist.ui.navigation :as ui.nav]
    [rocks.mygiftlist.ui.root :as ui.root]
    [com.fulcrologic.fulcro.algorithms.normalized-state :refer [swap!->]]
    [com.fulcrologic.fulcro.algorithms.tempid :as tempid]
    [com.fulcrologic.fulcro.application :as app]
    [com.fulcrologic.fulcro.components :as comp]
+   [com.fulcrologic.fulcro.data-fetch :as df]
    [com.fulcrologic.fulcro.routing.dynamic-routing :as dr]
    [com.fulcrologic.fulcro.mutations :refer [defmutation]]
    [clojure.core.async :as async :refer [go <!]]
@@ -45,9 +47,7 @@
                              {:authenticated authenticated})])
       (routing/start!)
       (if authenticated
-        (do (comp/transact! SPA
-              [(routing/route-to
-                 {:path (routing/url->path js/window.location.pathname)})])
+        (do (df/load! SPA [:component/id :left-nav] ui.nav/LeftNav)
             (let [{:keys [sub email]} (<! (auth/get-user-info))]
               (comp/transact! SPA [(m.user/set-current-user
                                      #::user{:id (tempid/tempid)

@@ -2,9 +2,9 @@
   (:require
    [rocks.mygiftlist.authentication :as auth]
    [rocks.mygiftlist.routing :as routing]
+   [rocks.mygiftlist.type.gift-list :as gift-list]
    [com.fulcrologic.fulcro.components :as comp :refer [defsc]]
-   [com.fulcrologic.fulcro.dom :as dom]
-   ))
+   [com.fulcrologic.fulcro.dom :as dom]))
 
 (defsc LoginLogoutItem [_this {:ui/keys [authenticated]}]
   {:query [:ui/authenticated]
@@ -37,3 +37,23 @@
         (ui-login-logout-item login-logout)))))
 
 (def ui-navbar (comp/factory Navbar))
+
+(defsc CreatedGiftListItem [this {::gift-list/keys [id name]}]
+  {:query [::gift-list/id ::gift-list/name]
+   :ident ::gift-list/id}
+  (dom/a :.item {:onClick #(comp/transact! this [(routing/route-to
+                                                   {:path ["gift-list" id]})])}
+    (dom/div {} name)))
+
+(def ui-created-gift-list-item (comp/factory CreatedGiftListItem {:keyfn ::gift-list/id}))
+
+(defsc LeftNav [_this {:keys [created-gift-lists]}]
+  {:query [{:created-gift-lists (comp/get-query CreatedGiftListItem)}]
+   :ident (fn [] [:component/id :left-nav])
+   :initial-state {:created-gift-lists []}}
+  (dom/div :.ui.vertical.menu
+    (dom/div :.item
+      (dom/div :.header "Created Gift Lists")
+      (mapv ui-created-gift-list-item created-gift-lists))))
+
+(def ui-left-nav (comp/factory LeftNav))

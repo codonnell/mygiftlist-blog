@@ -8,6 +8,6 @@
   (action [{:keys [state]}]
     (swap!-> state
       (assoc-in [::gift-list/id id] gift-list)
-      (update-in [:component/id :created-gift-lists :created-gift-lists]
+      (update-in [:component/id :left-nav :created-gift-lists]
         conj gift-list)))
   (remote [_] true))
