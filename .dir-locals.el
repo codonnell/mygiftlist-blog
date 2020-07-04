@@ -2,4 +2,4 @@
          (column-enforce-column . 70)
          (cider-default-cljs-repl . shadow)
          (cider-shadow-default-options . ":dev")
-         (cider-shadow-cljs-global-options . "-A:dev:test"))))
+         (cider-shadow-cljs-global-options . "-A:dev:backend:frontend:test"))))

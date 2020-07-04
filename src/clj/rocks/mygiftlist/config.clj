@@ -8,8 +8,8 @@
   (aero/read-config (io/resource "config.edn")
     {:profile profile}))
 
-(defn database-spec [config]
-  (:database-spec config))
+(defn database-opts [config]
+  (:database-opts config))
 
 (defn port [config]
   (:port config))
