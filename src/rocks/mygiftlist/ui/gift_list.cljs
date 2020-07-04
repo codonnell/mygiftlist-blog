@@ -32,23 +32,26 @@
   (let [validity (fs/get-spec-validity gift-list ::gift-list/name)]
     (ui-form
       {:onSubmit (fn [_]
-                   (if-not (= :valid validity)
-                     (comp/transact! this [(fs/mark-complete! {})])
+                   (if (= :valid validity)
                      (do
                        (comp/transact! this
                          [(m.gift-list/create-gift-list
                             (select-keys gift-list
                               [::gift-list/id ::gift-list/name]))])
-                       (reset-form!))))}
+                       (reset-form!))
+                     (comp/transact! this
+                       [(fs/mark-complete! {})])))}
       (ui-form-input
         {:placeholder "Birthday 2020"
          :onChange (fn [evt]
+                     (when (= :unchecked validity)
+                       (comp/transact! this
+                         [(fs/mark-complete!
+                            {:field ::gift-list/name})]))
                      (m/set-string! this ::gift-list/name :event evt))
-         :onBlur (fn [_]
-                   (comp/transact! this
-                     [(fs/mark-complete! {:field ::gift-list/name})]))
          :error (when (= :invalid validity)
                   "Gift list name cannot be blank")
+         :autoFocus true
          :fluid true
          :value name})
       (ui-button
