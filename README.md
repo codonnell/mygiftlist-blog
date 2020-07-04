@@ -28,7 +28,7 @@ docker-compose up -d
 ```
 After starting the database, you'll need to run migrations, which you can do with
 ```bash
-./scripts/migrate-local.sh
+make migrate
 ```
 There's also a convenience script available at `./scripts/psql` to open up a psql client connected to the database. There are resources to learn more about working with a database inside docker compose in the [documentation](https://docs.docker.com/compose/).
 
@@ -36,7 +36,7 @@ There's also a convenience script available at `./scripts/psql` to open up a psq
 
 To run this application in development mode, start a shadow-cljs server with
 ```bash
-npx shadow-cljs -A:dev:test -d nrepl:0.7.0 -d cider/piggieback:0.4.2 -d refactor-nrepl:2.5.0 -d cider/cider-nrepl:0.25.0-SNAPSHOT server
+npx shadow-cljs -A:dev:backend:frontend:test -d nrepl:0.8.2 -d cider/piggieback:0.5.1 -d refactor-nrepl:2.5.0 -d cider/cider-nrepl:0.25.3 server
 ```
 
 With this running, you can control compilation by accessing the shadow-cljs server at http://localhost:9630. In addition, this command will start up an nrepl server, which you should connect to with your preferred REPL. Alternatively, CIDER users can run `cider-jack-in-clj&cljs` and choose `shadow-cljs`.
@@ -58,4 +58,38 @@ make test-up
 With the test database up and running, you should be able to run tests. You can shut down the test database with
 ```bash
 make test-down
+```
+
+## Deployment
+
+To create an uberjar `target/mygiftlistrocks.jar` that includes production frontend assets, run
+```
+make uberjar
+```
+
+You can then run this uberjar with
+```
+java -cp target/mygiftlistrocks.jar clojure.main -m rocks.mygiftlist.main
+```
+
+You can run database migrations with
+```
+clojure -X:migrate :database-url '"postgresql://me:password@mydbhost:port/dbname"'
+```
+
+You can deploy to dokku with
+```
+git push dokku master
+```
+
+## Maintenance
+
+To find outdated dependencies, you can run
+```
+make outdated
+```
+
+To create a build report documenting how large frontend dependencies are in your bundle, run
+```
+make build-report
 ```

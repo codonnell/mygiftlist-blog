@@ -3,6 +3,7 @@
             [org.httpkit.server :as http-kit]
             [rocks.mygiftlist.authentication :as auth]
             [rocks.mygiftlist.config :as config]
+            [rocks.mygiftlist.db :as db]
             [rocks.mygiftlist.parser :as parser]
             [rocks.mygiftlist.transit :as transit]
             [com.fulcrologic.fulcro.server.api-middleware
@@ -26,9 +27,19 @@
        :headers {"Content-Type" "application/transit+json"}}
       (handler request))))
 
-(defn handler [{:keys [parser wrap-jwt]}]
+(defn- wrap-healthcheck [handler pool uri]
+  (fn [request]
+    (if (= uri (:uri request))
+      (do (db/execute! pool {:select [1] :from [:user]})
+          {:status 200
+           :body "Success"
+           :headers {"Content-Type" "text/plain"}})
+      (handler request))))
+
+(defn handler [{:keys [parser wrap-jwt pool]}]
   (-> not-found-handler
     (wrap-api parser "/api")
+    (wrap-healthcheck pool "/heathcheck")
     wrap-jwt
     (wrap-transit-params {:opts {:handlers transit/read-handlers}})
     (wrap-transit-response {:opts {:handlers transit/write-handlers}})
@@ -39,9 +50,11 @@
 (defmethod ig/init-key ::server
   [_ {::parser/keys [parser]
       ::config/keys [config]
-      ::auth/keys [wrap-jwt]}]
-  (http-kit/run-server (handler {:parser parser
-                                 :config config
+      ::db/keys [pool]
+      ::auth/keys   [wrap-jwt]}]
+  (http-kit/run-server (handler {:parser   parser
+                                 :config   config
+                                 :pool pool
                                  :wrap-jwt wrap-jwt})
     {:port (:port config)}))
 

@@ -7,9 +7,19 @@
             [next.jdbc.prepare :as p]
             [clojure.string :as str]
             [honeysql.core :as sql]
-            honeysql-postgres.format))
+            honeysql-postgres.format)
+  (:import [java.net URI]))
 
-(defn datasource-options [database-spec]
+(defn database-url->datasource [database-url]
+  (let [{:keys [userInfo host port path]} (bean (URI. database-url))
+        [username password] (str/split userInfo #":")]
+    {:username username
+     :password password
+     :server-name host
+     :port-number port
+     :database-name (subs path 1)}))
+
+(defn datasource-options [{:keys [database-url sslmode]}]
   (merge {:auto-commit        true
           :read-only          false
           :connection-timeout 30000
@@ -20,12 +30,14 @@
           :maximum-pool-size  10
           :pool-name          "db-pool"
           :adapter            "postgresql"
-          :register-mbeans    false}
-    database-spec))
+          :register-mbeans    false
+          :sslmode            sslmode}
+    (database-url->datasource database-url)))
 
 (defmethod ig/init-key ::pool
   [_ {::config/keys [config]}]
-  (pool/make-datasource (datasource-options (config/database-spec config))))
+  (pool/make-datasource (datasource-options
+                          (config/database-opts config))))
 
 (defmethod ig/halt-key! ::pool
   [_ pool]
