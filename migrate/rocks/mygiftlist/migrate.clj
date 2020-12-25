@@ -6,10 +6,13 @@
 (defn database-url->datasource-args [database-url]
   (let [{:keys [userInfo host port path]} (bean (java.net.URI. database-url))
         [username password] (str/split userInfo #":")]
-    [(str "jdbc:postgresql://" host ":" port path) username password]))
+    {:jdbc-url (str "jdbc:postgresql://" host ":" port path)
+     :username username
+     :password password}))
 
-(defn -main [& _args]
-  (let [[jdbc-url username password] (database-url->datasource-args (System/getenv "DATABASE_URL"))]
+(defn migrate [{:keys [database-url]}]
+  (let [{:keys [jdbc-url username password]}
+        (database-url->datasource-args (or database-url (System/getenv "DATABASE_URL")))]
     (.. (Flyway/configure)
       (dataSource jdbc-url username password)
       (locations (into-array Location [(Location. "filesystem:./migrations")]))

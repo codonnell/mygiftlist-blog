@@ -36,7 +36,7 @@ There's also a convenience script available at `./scripts/psql` to open up a psq
 
 To run this application in development mode, start a shadow-cljs server with
 ```bash
-npx shadow-cljs -A:dev:backend:frontend:test -d nrepl:0.7.0 -d cider/piggieback:0.4.2 -d refactor-nrepl:2.5.0 -d cider/cider-nrepl:0.25.0-SNAPSHOT server
+npx shadow-cljs -A:dev:backend:frontend:test -d nrepl:0.8.2 -d cider/piggieback:0.5.1 -d refactor-nrepl:2.5.0 -d cider/cider-nrepl:0.25.3 server
 ```
 
 With this running, you can control compilation by accessing the shadow-cljs server at http://localhost:9630. In addition, this command will start up an nrepl server, which you should connect to with your preferred REPL. Alternatively, CIDER users can run `cider-jack-in-clj&cljs` and choose `shadow-cljs`.
@@ -74,7 +74,12 @@ java -cp target/mygiftlistrocks.jar clojure.main -m rocks.mygiftlist.main
 
 You can run database migrations with
 ```
-DATABASE_URL=postgresql://me:password@mydbhost:port/dbname
+clojure -X:migrate :database-url '"postgresql://me:password@mydbhost:port/dbname"'
+```
+
+You can deploy to dokku with
+```
+git push dokku master
 ```
 
 ## Maintenance

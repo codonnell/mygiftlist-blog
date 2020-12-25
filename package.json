@@ -4,12 +4,12 @@
     "description": "",
     "private": true,
     "devDependencies": {
-        "@auth0/auth0-spa-js": "^1.10.0",
-        "node-sass": "^4.14.1",
-        "react": "^16.13.1",
-        "react-dom": "^16.13.1",
-        "semantic-ui-react": "^0.88.2",
-        "shadow-cljs": "^2.10.13"
+        "@auth0/auth0-spa-js": "^1.13.5",
+        "node-sass": "^5.0.0",
+        "react": "^17.0.1",
+        "react-dom": "^17.0.1",
+        "semantic-ui-react": "^2.0.1",
+        "shadow-cljs": "^2.11.10"
     },
     "scripts": {
         "css-build": "node-sass --omit-source-map-url sass/style.scss resources/public/css/style.css",
